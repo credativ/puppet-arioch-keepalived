@@ -1,0 +1,5 @@
+puppet-module-arioch-keepalived (1.2.3-1) unstable; urgency=low
+
+  * Initial packaging.
+
+ -- Arnd Hannemann <arnd.hannemann@credativ.de>  Fri, 22 Jan 2016 14:49:50 +0100
