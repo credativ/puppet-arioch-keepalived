@@ -9,7 +9,7 @@ class keepalived::config {
   }
 
   if $::keepalived::service_manage == true {
-    File {
+    Concat {
       notify  => Service[$::keepalived::service_name],
     }
   }
@@ -38,5 +38,9 @@ class keepalived::config {
     content => "\n",
     order   => '999',
   }
+
+  create_resources(keepalived::vrrp::instance, $::keepalived::vrrp_instance)
+  create_resources(keepalived::vrrp::script, $::keepalived::vrrp_script)
+  create_resources(keepalived::vrrp::sync_group, $::keepalived::vrrp_sync_group)
 }
 
