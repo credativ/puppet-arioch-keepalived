@@ -1,0 +1,27 @@
+From: Arnd Hannemann <arnd.hannemann@credativ.de>
+Date: Fri, 29 Jan 2016 12:31:38 +0100
+Subject: misc_check: rspec: Explicitly enable both expectation syntaxes to
+ avoid deprecation warning
+
+---
+ spec/defines/keepalived_lvs_real_server_misc_check_spec.rb | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/spec/defines/keepalived_lvs_real_server_misc_check_spec.rb b/spec/defines/keepalived_lvs_real_server_misc_check_spec.rb
+index 70e0d89..288021c 100644
+--- a/spec/defines/keepalived_lvs_real_server_misc_check_spec.rb
++++ b/spec/defines/keepalived_lvs_real_server_misc_check_spec.rb
+@@ -1,6 +1,13 @@
+ 
+ require 'spec_helper'
+ 
++# explicitely enable both syntaxes to avoid deprecation warnung
++RSpec.configure do |config|
++  config.expect_with :rspec do |c|
++    c.syntax = [:should, :expect]
++  end
++end
++
+ describe 'keepalived::lvs::real_server::misc_check', :type => 'define' do
+   let(:title) { 'test' }
+   let(:facts) { debian_facts }

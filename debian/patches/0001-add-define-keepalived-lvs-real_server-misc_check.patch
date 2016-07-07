@@ -1,0 +1,187 @@
+From: Arnd Hannemann <arnd.hannemann@credativ.de>
+Date: Fri, 22 Jan 2016 17:28:01 +0100
+Subject: add define keepalived::lvs::real_server::misc_check
+
+---
+ manifests/lvs/real_server.pp                       |  7 ++++
+ manifests/lvs/real_server/misc_check.pp            | 40 ++++++++++++++++++++++
+ .../keepalived_lvs_real_server_misc_check_spec.rb  | 29 ++++++++++++++++
+ spec/defines/keepalived_lvs_real_server_spec.rb    | 16 +++++++++
+ templates/lvs_real_server.erb                      |  1 -
+ templates/lvs_real_server_misc_check.erb           |  9 +++++
+ 6 files changed, 101 insertions(+), 1 deletion(-)
+ create mode 100644 manifests/lvs/real_server/misc_check.pp
+ create mode 100644 spec/defines/keepalived_lvs_real_server_misc_check_spec.rb
+ create mode 100644 templates/lvs_real_server_misc_check.erb
+
+diff --git a/manifests/lvs/real_server.pp b/manifests/lvs/real_server.pp
+index a37eab8..bcb8624 100644
+--- a/manifests/lvs/real_server.pp
++++ b/manifests/lvs/real_server.pp
+@@ -47,6 +47,13 @@ define keepalived::lvs::real_server (
+   concat::fragment { "keepalived.conf_lvs_real_server_${_name}":
+     target  => "${::keepalived::config_dir}/keepalived.conf",
+     content => template('keepalived/lvs_real_server.erb'),
++    order   => "250-${virtual_server}-${_name}-000",
++  }
++
++  concat::fragment { "keepalived.conf_lvs_real_server_${_name}-footer":
++    target  => "${::keepalived::config_dir}/keepalived.conf",
++    content => "  }\n",
+     order   => "250-${virtual_server}-${_name}",
+   }
++
+ }
+diff --git a/manifests/lvs/real_server/misc_check.pp b/manifests/lvs/real_server/misc_check.pp
+new file mode 100644
+index 0000000..eff2b46
+--- /dev/null
++++ b/manifests/lvs/real_server/misc_check.pp
+@@ -0,0 +1,40 @@
++# == Define: keepalived::lvs::real_server::misc_check
++#
++# Add a misc check to a specific real_server
++#
++# === Parameters
++#
++# Refer to keepalived's documentation to understand the behaviour
++# of these parameters
++#
++# [*virtual_server*]
++#   The name of the virtual server the real server belongs to
++#
++# [*real_server*]
++#   The name of the real server this check will be added to
++#
++# [*misc_path*]
++#   The path to the executable of the misc check
++#
++# [*misc_timeout*]
++#   The timeout of the misc check
++#
++# [*misc_dynamic*]
++#   Wheter or not the returnc code of the misc check is interpreded as weight
++
++define keepalived::lvs::real_server::misc_check (
++  $virtual_server,
++  $real_server,
++  $misc_path,
++  $misc_timeout = 0,
++  $misc_dynamic = false,
++) {
++  $_real_server = regsubst($real_server, '[:\/\n]', '')
++  $_name = regsubst($name, '[:\/\n]', '')
++
++  concat::fragment { "keepalived.conf_lvs_real_server_misc_check_${_name}":
++    target  => "${::keepalived::config_dir}/keepalived.conf",
++    content => template('keepalived/lvs_real_server_misc_check.erb'),
++    order   => "250-${virtual_server}-${_real_server}-${_name}",
++  }
++}
+diff --git a/spec/defines/keepalived_lvs_real_server_misc_check_spec.rb b/spec/defines/keepalived_lvs_real_server_misc_check_spec.rb
+new file mode 100644
+index 0000000..70e0d89
+--- /dev/null
++++ b/spec/defines/keepalived_lvs_real_server_misc_check_spec.rb
+@@ -0,0 +1,29 @@
++
++require 'spec_helper'
++
++describe 'keepalived::lvs::real_server::misc_check', :type => 'define' do
++  let(:title) { 'test' }
++  let(:facts) { debian_facts }
++  let(:pre_condition) { '$concat_basedir = "/tmp"' }
++
++  context 'with bare minimum: real_server, misc_path' do
++    let(:params) {
++      {
++        :virtual_server => 'virt1',
++        :real_server => 'real1',
++        :misc_path => '/bin/true'
++      }
++    }
++
++    it {
++      should contain_concat__fragment('keepalived.conf_lvs_real_server_misc_check_test').with( {
++        'content' => <<-CONTENT.gsub(/ {10}/, '  ')
++            MISC_CHECK {
++              misc_path "/bin/true"
++            }
++        CONTENT
++      })
++    }
++  end
++
++end
+diff --git a/spec/defines/keepalived_lvs_real_server_spec.rb b/spec/defines/keepalived_lvs_real_server_spec.rb
+index 42669ac..fe315b8 100644
+--- a/spec/defines/keepalived_lvs_real_server_spec.rb
++++ b/spec/defines/keepalived_lvs_real_server_spec.rb
+@@ -19,6 +19,10 @@ describe 'keepalived::lvs::real_server', :type => 'define' do
+       should contain_concat__fragment('keepalived.conf_lvs_real_server_test').with( {
+         'content' => <<-CONTENT.gsub(/ {10}/, '  ')
+           real_server 127.3.4.5 8080 {
++        CONTENT
++      })
++      should contain_concat__fragment('keepalived.conf_lvs_real_server_test-footer').with( {
++        'content' => <<-CONTENT.gsub(/ {10}/, '  ')
+           }
+         CONTENT
+       })
+@@ -90,6 +94,10 @@ describe 'keepalived::lvs::real_server', :type => 'define' do
+                 connect_ip 127.0.0.1
+               }
+             }
++        CONTENT
++      })
++      should contain_concat__fragment('keepalived.conf_lvs_real_server_test-footer').with( {
++        'content' => <<-CONTENT.gsub(/ {10}/, '  ')
+           }
+         CONTENT
+       })
+@@ -119,6 +127,10 @@ describe 'keepalived::lvs::real_server', :type => 'define' do
+                 connect_ip 127.0.0.1
+               }
+             }
++        CONTENT
++      })
++      should contain_concat__fragment('keepalived.conf_lvs_real_server_test-footer').with( {
++        'content' => <<-CONTENT.gsub(/ {10}/, '  ')
+           }
+         CONTENT
+       })
+@@ -144,6 +156,10 @@ describe 'keepalived::lvs::real_server', :type => 'define' do
+             inhibit_on_failure
+             notify_up 'notify-send "good to go!"'
+             weight 1
++        CONTENT
++      })
++      should contain_concat__fragment('keepalived.conf_lvs_real_server_test-footer').with( {
++        'content' => <<-CONTENT.gsub(/ {10}/, '  ')
+           }
+         CONTENT
+       })
+diff --git a/templates/lvs_real_server.erb b/templates/lvs_real_server.erb
+index 42d48bd..14d0d2d 100644
+--- a/templates/lvs_real_server.erb
++++ b/templates/lvs_real_server.erb
+@@ -24,4 +24,3 @@
+   end
+ -%>
+   real_server <%= @ip_address %> <%= @port %> {<%= format_options(@options) %>
+-  }
+diff --git a/templates/lvs_real_server_misc_check.erb b/templates/lvs_real_server_misc_check.erb
+new file mode 100644
+index 0000000..3d7799e
+--- /dev/null
++++ b/templates/lvs_real_server_misc_check.erb
+@@ -0,0 +1,9 @@
++    MISC_CHECK {
++      misc_path "<%= @misc_path %>"
++<% if @misc_timeout != 0 -%>
++      misc_timeout <%= @misc_timeout %>
++<% end -%>
++<% if @misc_dynamic -%>
++      misc_dynamic
++<% end -%>
++    }

@@ -1,0 +1,44 @@
+From: Arnd Hannemann <arnd.hannemann@credativ.de>
+Date: Fri, 29 Jan 2016 12:21:32 +0100
+Subject: misc_check: use a default value of undef for misc_timout and
+ validate if its an integer, if set
+
+---
+ manifests/lvs/real_server/misc_check.pp  | 6 +++++-
+ templates/lvs_real_server_misc_check.erb | 2 +-
+ 2 files changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/manifests/lvs/real_server/misc_check.pp b/manifests/lvs/real_server/misc_check.pp
+index eff2b46..f2978a3 100644
+--- a/manifests/lvs/real_server/misc_check.pp
++++ b/manifests/lvs/real_server/misc_check.pp
+@@ -26,12 +26,16 @@ define keepalived::lvs::real_server::misc_check (
+   $virtual_server,
+   $real_server,
+   $misc_path,
+-  $misc_timeout = 0,
++  $misc_timeout = undef,
+   $misc_dynamic = false,
+ ) {
+   $_real_server = regsubst($real_server, '[:\/\n]', '')
+   $_name = regsubst($name, '[:\/\n]', '')
+ 
++  if $misc_timeout {
++    validate_re($misc_timeout, '^\d+$')
++  }
++
+   concat::fragment { "keepalived.conf_lvs_real_server_misc_check_${_name}":
+     target  => "${::keepalived::config_dir}/keepalived.conf",
+     content => template('keepalived/lvs_real_server_misc_check.erb'),
+diff --git a/templates/lvs_real_server_misc_check.erb b/templates/lvs_real_server_misc_check.erb
+index 3d7799e..2f390da 100644
+--- a/templates/lvs_real_server_misc_check.erb
++++ b/templates/lvs_real_server_misc_check.erb
+@@ -1,6 +1,6 @@
+     MISC_CHECK {
+       misc_path "<%= @misc_path %>"
+-<% if @misc_timeout != 0 -%>
++<% if @misc_timeout -%>
+       misc_timeout <%= @misc_timeout %>
+ <% end -%>
+ <% if @misc_dynamic -%>

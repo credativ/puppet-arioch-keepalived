@@ -1,0 +1,43 @@
+From: Arnd Hannemann <arnd.hannemann@credativ.de>
+Date: Thu, 7 Jul 2016 10:14:57 +0200
+Subject: misc_check: rspec: move enablement of both expactation syntaxes to
+ spec_helper.rb
+
+---
+ spec/defines/keepalived_lvs_real_server_misc_check_spec.rb | 7 -------
+ spec/spec_helper.rb                                        | 4 ++++
+ 2 files changed, 4 insertions(+), 7 deletions(-)
+
+diff --git a/spec/defines/keepalived_lvs_real_server_misc_check_spec.rb b/spec/defines/keepalived_lvs_real_server_misc_check_spec.rb
+index 288021c..70e0d89 100644
+--- a/spec/defines/keepalived_lvs_real_server_misc_check_spec.rb
++++ b/spec/defines/keepalived_lvs_real_server_misc_check_spec.rb
+@@ -1,13 +1,6 @@
+ 
+ require 'spec_helper'
+ 
+-# explicitely enable both syntaxes to avoid deprecation warnung
+-RSpec.configure do |config|
+-  config.expect_with :rspec do |c|
+-    c.syntax = [:should, :expect]
+-  end
+-end
+-
+ describe 'keepalived::lvs::real_server::misc_check', :type => 'define' do
+   let(:title) { 'test' }
+   let(:facts) { debian_facts }
+diff --git a/spec/spec_helper.rb b/spec/spec_helper.rb
+index a24f96b..a8d48d0 100644
+--- a/spec/spec_helper.rb
++++ b/spec/spec_helper.rb
+@@ -7,6 +7,10 @@ RSpec.configure do |c|
+   c.module_path = File.join(fixture_path, 'modules')
+   c.manifest_dir = File.join(fixture_path, 'manifests')
+   c.environmentpath = File.join(fixture_path,'..')
++  # explicitely enable both syntaxes to avoid deprecation warning
++  c.expect_with :rspec do |ce|
++    ce.syntax = [:should, :expect]
++  end
+ end
+ 
+ def centos_facts
