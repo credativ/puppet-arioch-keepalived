@@ -1,0 +1,11 @@
+puppet-module-arioch-keepalived (1.2.4-1) unstable; urgency=medium
+
+  * Upstream version 1.2.4
+
+ -- Arnd Hannemann <arnd.hannemann@credativ.de>  Thu, 07 Jul 2016 10:24:44 +0200
+
+puppet-module-arioch-keepalived (1.2.3-1) unstable; urgency=low
+
+  * Initial packaging.
+
+ -- Arnd Hannemann <arnd.hannemann@credativ.de>  Fri, 22 Jan 2016 14:49:50 +0100
