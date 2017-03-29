@@ -1,3 +1,9 @@
+puppet-module-arioch-keepalived (1.2.4-3) unstable; urgency=medium
+
+  * merge master into next properly to fix git-flow mishaps
+
+ -- Maximilian Gaß <maximilian.gass@credativ.de>  Wed, 29 Mar 2017 11:49:21 +0000
+
 puppet-module-arioch-keepalived (1.2.4-2) unstable; urgency=medium
 
   * add define keepalived::lvs::real_server::misc_check
