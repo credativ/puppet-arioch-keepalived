@@ -19,10 +19,6 @@ describe 'keepalived::lvs::real_server', :type => 'define' do
       should contain_concat__fragment('keepalived.conf_lvs_real_server_test').with( {
         'content' => <<-CONTENT.gsub(/ {10}/, '  ')
           real_server 127.3.4.5 8080 {
-        CONTENT
-      })
-      should contain_concat__fragment('keepalived.conf_lvs_real_server_test-footer').with( {
-        'content' => <<-CONTENT.gsub(/ {10}/, '  ')
           }
         CONTENT
       })
@@ -94,10 +90,6 @@ describe 'keepalived::lvs::real_server', :type => 'define' do
                 connect_ip 127.0.0.1
               }
             }
-        CONTENT
-      })
-      should contain_concat__fragment('keepalived.conf_lvs_real_server_test-footer').with( {
-        'content' => <<-CONTENT.gsub(/ {10}/, '  ')
           }
         CONTENT
       })
@@ -127,10 +119,6 @@ describe 'keepalived::lvs::real_server', :type => 'define' do
                 connect_ip 127.0.0.1
               }
             }
-        CONTENT
-      })
-      should contain_concat__fragment('keepalived.conf_lvs_real_server_test-footer').with( {
-        'content' => <<-CONTENT.gsub(/ {10}/, '  ')
           }
         CONTENT
       })
@@ -156,10 +144,6 @@ describe 'keepalived::lvs::real_server', :type => 'define' do
             inhibit_on_failure
             notify_up 'notify-send "good to go!"'
             weight 1
-        CONTENT
-      })
-      should contain_concat__fragment('keepalived.conf_lvs_real_server_test-footer').with( {
-        'content' => <<-CONTENT.gsub(/ {10}/, '  ')
           }
         CONTENT
       })
