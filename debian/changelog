@@ -1,3 +1,9 @@
+puppet-module-arioch-keepalived (1.2.4-4) unstable; urgency=medium
+
+  * Remove direct modifications to upstream source
+
+ -- Maximilian Gaß <maximilian.gass@credativ.de>  Wed, 29 Mar 2017 12:25:13 +0000
+
 puppet-module-arioch-keepalived (1.2.4-3) unstable; urgency=medium
 
   * merge master into next properly to fix git-flow mishaps
