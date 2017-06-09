@@ -1,3 +1,9 @@
+puppet-module-arioch-keepalived (1.2.4-5) unstable; urgency=medium
+
+  * create puppetfile-usable branch for debian/1.2.4-4
+
+ -- Damian Lukowski <damian.lukowski@credativ.de>  Fri, 09 Jun 2017 12:00:35 +0000
+
 puppet-module-arioch-keepalived (1.2.4-4) unstable; urgency=medium
 
   * Remove direct modifications to upstream source
