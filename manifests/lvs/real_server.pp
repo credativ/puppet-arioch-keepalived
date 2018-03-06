@@ -53,7 +53,7 @@ define keepalived::lvs::real_server (
   concat::fragment { "keepalived.conf_lvs_real_server_${_name}-footer":
     target  => "${::keepalived::config_dir}/keepalived.conf",
     content => "  }\n",
-    order   => "250-${virtual_server}-${_name}",
+    order   => "250-${virtual_server}-${_name}-zzz",
   }
 
 }
